@@ -9,7 +9,9 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
+  "type": "module",
   "dependencies": {
+    "@types/paper": "^0.12.3",
     "paper": "^0.12.17"
   }
 }
