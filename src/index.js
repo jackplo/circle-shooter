@@ -20,12 +20,16 @@ window.onload = function() {
     view.onKeyDown = function(event) {
         if (event.key === 'w') {
             userChar.accelerate(1)
-        } else if (event.key === 's') {
+        } 
+        if (event.key === 's') {
             userChar.decelerate(-1)
+        } 
+        if (Key.isDown('space')) {
+            userChar.shoot()
         }
     }
     
     view.onFrame = function() {
-        userChar.update()
+        userChar.update(yMax, xMax)
     }
 }
