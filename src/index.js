@@ -1,4 +1,5 @@
-import { Player } from "./player.js";
+import { Player } from "./player.js"
+import { Enemy  } from "./enemy.js"
 
 window.onload = function() {
     var canvas = document.getElementById("canvas");
@@ -11,6 +12,11 @@ window.onload = function() {
     var centerPoint = new Point(xMax/2, yMax/2)
     
     var userChar = new Player(centerPoint.x, centerPoint.y, "blue", "good")
+    var enemy = new Enemy(centerPoint.x, centerPoint.y, "red", userChar)
+
+    setInterval(() => {
+        enemy.shoot1()
+    }, 2000)
     
     view.onMouseMove = function(event) { 
         userChar.rotate(event.point)
@@ -24,12 +30,17 @@ window.onload = function() {
         if (event.key === 's') {
             userChar.decelerate(-1)
         } 
-        if (Key.isDown('space')) {
+    }
+
+    
+    view.onKeyUp = function(event) {
+        if (event.key === "space") {
             userChar.shoot()
         }
-    }
+    } 
     
     view.onFrame = function() {
+        enemy.update(xMax, yMax)
         userChar.update(yMax, xMax)
     }
 }

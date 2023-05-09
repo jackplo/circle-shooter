@@ -7,7 +7,7 @@ export class Player {
 
         this.playerBase = new Path.Circle({
             center : [x, y],
-            radius : 50,
+            radius : 25,
             strokeColor : this.color,
             fillColor : this.color
         })
@@ -21,10 +21,10 @@ export class Player {
     
     accelerate(v) {
         this.velocity += v
-        if (this.velocity > 10) {
-            this.velocity = 10
-        } else if (this.velocity < -10) {
-            this.velocity = -10
+        if (this.velocity > 5) {
+            this.velocity = 5
+        } else if (this.velocity < -5) {
+            this.velocity = -5
         }
     }   
 
@@ -89,9 +89,9 @@ export class Player {
 
     lookDir() {
         this.lookPath.remove()
-        this.lookPath = new Path.Line(this.playerBase.position, this.playerBase.position.add(new Point({angle: this.calculateAngle(this.mousePoint), length: 70})))
+        this.lookPath = new Path.Line(this.playerBase.position, this.playerBase.position.add(new Point({angle: this.calculateAngle(this.mousePoint), length: 35})))
         this.lookPath.strokeColor = this.color
-        this.lookPath.strokeWidth = 35
+        this.lookPath.strokeWidth = 17.5
     }
 
 }
