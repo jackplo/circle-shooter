@@ -1,9 +1,9 @@
 import { Bullet } from "./bullet.js"
 
 export class Player {
-    constructor(x, y, color, team) { 
+    constructor(x, y, color, enemy) { 
         this.color = color
-        this.team = team
+        this.enemy = enemy
 
         this.playerBase = new Path.Circle({
             center : [x, y],
@@ -12,6 +12,7 @@ export class Player {
             fillColor : this.color
         })
 
+        this.lives = 20
         this.velocity = 0
         this.bulletVelocity = 5
         this.mousePoint = new Point(this.playerBase.position.x, this.playerBase.position.y)
@@ -54,10 +55,16 @@ export class Player {
 
     update(clientHeight, clientWidth) {
         this.move()
-        this.lookDir() 
+        this.lookDir()
+
+        if (this.lives <= 0) {
+            this.death()
+        }
+
         if (this.bulletArray != []) {
             for (let i = this.bulletArray.length - 1; i >= 0; i--) {
                 this.bulletArray[i].update()
+                this.bulletArray[i].itemHitTest()
                 if (this.outOfBounds(this.bulletArray[i].bulletShape, clientHeight, clientWidth)) {
                     this.bulletArray[i].bulletShape.remove()
                     this.bulletArray.splice(i, 1)
@@ -68,7 +75,11 @@ export class Player {
 
     shoot() {
         let turret_pos = this.playerBase.position.add(new Point({angle: this.calculateAngle(this.mousePoint), length: 70}))
-        this.bulletArray.push(new Bullet(turret_pos.x, turret_pos.y, 3, this.calculateAngle(this.mousePoint)))
+        this.bulletArray.push(new Bullet(turret_pos.x, turret_pos.y, 3, this.calculateAngle(this.mousePoint), this.enemy, this.enemy.enemyBase))
+    }
+
+    death() {
+        console.log('player: i am dead')
     }
 
     calculateAngle(point) {

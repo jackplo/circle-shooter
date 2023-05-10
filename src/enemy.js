@@ -15,9 +15,7 @@ export class Enemy {
         this.velocity = 0
         this.bulletVelocity = 5
         this.bulletArray = []
-        //this.aimPos = new Point(this.player.playerBase.position.x, this.player.playerBase.position.y)
-        //this.lookPath = new Path.Line(this.playerBase.position, this.playerBase.position)
-        this.timer = 0
+        this.lives = 20
     }
 
     accelerate(v) {
@@ -58,8 +56,14 @@ export class Enemy {
         this.enemyBase.position.y += dir.y
     }
 
-    shoot1() {
-        this.bulletArray.push(new Bullet(this.enemyBase.position.x, this.enemyBase.position.y, 3, this.calculateAngle(this.player)))
+    death() {
+        console.log('enemy: i am dead')
+    }
+
+    shoot() {
+        setInterval(() => {
+            this.bulletArray.push(new Bullet(this.enemyBase.position.x, this.enemyBase.position.y, 3, this.calculateAngle(this.player), this.player, this.player.playerBase))
+        }, 2000)
     }
 
     outOfBounds(item, clientHeight, clientWidth) {
@@ -68,9 +72,8 @@ export class Enemy {
 
     calculateAngle(player) {
         let enemyPos = new Point(this.enemyBase.position.x, this.enemyBase.position.y)
-        let playerPos = new Point(player.playerBase.position.x, player.playerBase.position.y)
-        //console.log(playerPos.x)
-        let lookVector = playerPos.subtract(enemyPos)
+        this.playerPos = new Point(player.playerBase.position.x, player.playerBase.position.y)
+        let lookVector = this.playerPos.subtract(enemyPos)
 
         if (lookVector.length < 10) {
             this.velocity = 0
@@ -95,9 +98,14 @@ export class Enemy {
             this.stop()
         }
 
+        if (this.lives <= 0) {
+            this.death()
+        }
+
         if (this.bulletArray != []) {
             for (let i = this.bulletArray.length - 1; i >= 0; i--) {
                 this.bulletArray[i].update()
+                this.bulletArray[i].itemHitTest()
                 if (this.outOfBounds(this.bulletArray[i].bulletShape, clientHeight, clientWidth)) {
                     this.bulletArray[i].bulletShape.remove()
                     this.bulletArray.splice(i, 1)
