@@ -1,11 +1,11 @@
 import { Bullet } from "./bullet.js"
 
 export class Enemy {
-    constructor(x, y, color, player) {
+    constructor(x, y, color, player, bulletArray) {
         this.color = color
         this.player = player
         
-        this.enemyBase = Path.Circle({
+        this.base = Path.Circle({
             center: [x, y],
             radius: 25,
             strokeColor: this.color,
@@ -14,9 +14,10 @@ export class Enemy {
 
         this.velocity = 0
         this.bulletVelocity = 5
-        this.bulletArray = []
+        this.bulletArray = bulletArray
         this.lives = 3
         this.interval = 0
+        this.lookPath = new Path.Line(this.base.position, this.base.position)
     }
 
     accelerate(v) {
@@ -42,8 +43,8 @@ export class Enemy {
             angle: this.calculateAngle(this.player),   
         })
     
-        this.enemyBase.position.x += dir.x
-        this.enemyBase.position.y += dir.y
+        this.base.position.x += dir.x
+        this.base.position.y += dir.y
     }
 
     stop() {
@@ -53,32 +54,26 @@ export class Enemy {
             angle: this.calculateAngle(this.player)
         })
 
-        this.enemyBase.position.x += dir.x
-        this.enemyBase.position.y += dir.y
+        this.base.position.x += dir.x
+        this.base.position.y += dir.y
     }
 
     death() {
-        this.enemyBase.remove()
+        this.base.remove()
+        this.lookPath.remove()
         clearInterval(this.interval)
-        for (let i = this.bulletArray.length - 1; i >= 0; i--) {
-            this.bulletArray[i].bulletShape.remove()
-            this.bulletArray.splice(i, 1)
-        }
     }
 
     shoot() {
         this.interval = setInterval(() => {
-            this.bulletArray.push(new Bullet(this.enemyBase.position.x, this.enemyBase.position.y, 3, this.calculateAngle(this.player), this.player, this.player.playerBase))
+            let turret_pos = this.base.position.add(new Point({angle: this.calculateAngle(this.player), length: 35}))
+            this.bulletArray.push(new Bullet(turret_pos.x, turret_pos.y, 3, this.calculateAngle(this.player), this.color))
         }, 2000)
     }
 
-    outOfBounds(item, clientHeight, clientWidth) {
-        return (item.position.x > clientWidth || item.position.x < 0 || item.position.y > clientHeight || item.position.y < 0)
-    }
-
     calculateAngle(player) {
-        let enemyPos = new Point(this.enemyBase.position.x, this.enemyBase.position.y)
-        this.playerPos = new Point(player.playerBase.position.x, player.playerBase.position.y)
+        let enemyPos = new Point(this.base.position.x, this.base.position.y)
+        this.playerPos = new Point(player.base.position.x, player.base.position.y)
         let lookVector = this.playerPos.subtract(enemyPos)
 
         if (lookVector.length < 10) {
@@ -95,26 +90,14 @@ export class Enemy {
         return distance
     }
 
-    update(clientWidth, clientHeight) {
-        if (this.lives >= 0) {
-            let playerPos = new Point(this.player.playerBase.position)
-            let enemyPos = new Point(this.enemyBase.position)
-            if (this.pythagorean(playerPos, enemyPos) > 100) {
-                this.move()
-            } else {
-                this.stop()
-            }
+    update() {
+        let playerPos = new Point(this.player.base.position)
+        let enemyPos = new Point(this.base.position)
+        this.lookPath.remove()
+        this.lookPath = new Path.Line(this.base.position, this.base.position.add(new Point({angle: this.calculateAngle(this.player), length: 35})))
+        this.lookPath.strokeColor = this.color
+        this.lookPath.strokeWidth = 17.5
 
-            for (let i = this.bulletArray.length - 1; i >= 0; i--) {
-                this.bulletArray[i].update()
-                if (this.bulletArray[i].itemHitTest() || this.outOfBounds(this.bulletArray[i].bulletShape, clientHeight, clientWidth)) {
-                    this.bulletArray[i].bulletShape.remove()
-                    this.bulletArray.splice(i, 1)
-                }
-            }
-        } else {
-            this.death()
-            return
-        }
+        this.pythagorean(playerPos, enemyPos) > 100 ? this.move() : this.stop()
     }
 }

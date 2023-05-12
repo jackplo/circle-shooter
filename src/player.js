@@ -1,11 +1,10 @@
 import { Bullet } from "./bullet.js"
 
 export class Player {
-    constructor(x, y, color, enemy) { 
+    constructor(x, y, color, bulletArray) { 
         this.color = color
-        this.enemy = enemy
 
-        this.playerBase = new Path.Circle({
+        this.base = new Path.Circle({
             center : [x, y],
             radius : 25,
             strokeColor : this.color,
@@ -15,9 +14,9 @@ export class Player {
         this.lives = 3
         this.velocity = 0
         this.bulletVelocity = 5
-        this.mousePoint = new Point(this.playerBase.position.x, this.playerBase.position.y)
-        this.lookPath = new Path.Line(this.playerBase.position, this.playerBase.position)
-        this.bulletArray = []
+        this.mousePoint = new Point(this.base.position.x, this.base.position.y)
+        this.lookPath = new Path.Line(this.base.position, this.base.position)
+        this.bulletArray = bulletArray
     }
     
     accelerate(v) {
@@ -44,48 +43,27 @@ export class Player {
         })
         
         
-        this.playerBase.position.x += this.dir.x
-        this.playerBase.position.y += this.dir.y
+        this.base.position.x += this.dir.x
+        this.base.position.y += this.dir.y
     
     }
 
-    outOfBounds(item, clientHeight, clientWidth) {
-        return (item.position.x > clientWidth || item.position.x < 0 || item.position.y > clientHeight || item.position.y < 0)
-    }
-
-    update(clientHeight, clientWidth) {
+    update() {
         this.move()
         this.lookDir()
-
-        if (this.lives <= 0) {
-            this.death()
-        }
-
-        for (let i = this.bulletArray.length - 1; i >= 0; i--) {
-            this.bulletArray[i].update()
-            if (this.bulletArray[i].itemHitTest() || this.outOfBounds(this.bulletArray[i].bulletShape, clientHeight, clientWidth)) {
-                this.bulletArray[i].bulletShape.remove()
-                this.bulletArray.splice(i, 1)
-            }
-        }
     }
 
     shoot() {
-        let turret_pos = this.playerBase.position.add(new Point({angle: this.calculateAngle(this.mousePoint), length: 70}))
-        this.bulletArray.push(new Bullet(turret_pos.x, turret_pos.y, 3, this.calculateAngle(this.mousePoint), this.enemy, this.enemy.enemyBase))
+        let turret_pos = this.base.position.add(new Point({angle: this.calculateAngle(this.mousePoint), length: 35}))
+        this.bulletArray.push(new Bullet(turret_pos.x, turret_pos.y, 3, this.calculateAngle(this.mousePoint), this.color))
     }
 
     death() {
-        this.playerBase.remove()
-        for (let i = this.bulletArray.length - 1; i >= 0; i--) {
-            this.bulletArray[i].bulletShape.remove()
-            this.bulletArray.splice(i, 1)
-        }
-        this.velocity = 0
+        this.base.remove()
     }
 
     calculateAngle(point) {
-        let playerPos = new Point(this.playerBase.position.x, this.playerBase.position.y)
+        let playerPos = new Point(this.base.position.x, this.base.position.y)
         let mousePos = new Point(point.x, point.y)
         let lookVector = mousePos.subtract(playerPos)
 
@@ -102,9 +80,8 @@ export class Player {
 
     lookDir() {
         this.lookPath.remove()
-        this.lookPath = new Path.Line(this.playerBase.position, this.playerBase.position.add(new Point({angle: this.calculateAngle(this.mousePoint), length: 35})))
+        this.lookPath = new Path.Line(this.base.position, this.base.position.add(new Point({angle: this.calculateAngle(this.mousePoint), length: 35})))
         this.lookPath.strokeColor = this.color
         this.lookPath.strokeWidth = 17.5
     }
-
 }

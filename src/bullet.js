@@ -1,5 +1,5 @@
 export class Bullet {
-    constructor(x, y, velocity, angle, target, targetBase) {
+    constructor(x, y, velocity, angle, origin) {
         this.velocity = velocity
         this.angle = angle
         
@@ -9,9 +9,11 @@ export class Bullet {
             fillColor: "black"
         })
 
-        this.target = target
-        this.targetBase = targetBase
-        this.targetPos = new Point(this.targetBase.position.x, this.targetBase.position.y)
+        //this.target = target
+        //this.targetBase = targetBase
+        //this.targetPos = new Point(this.targetBase.position.x, this.targetBase.position.y)
+        this.bulletPos = 0
+        this.origin = origin
     }
 
     update() {
@@ -20,6 +22,7 @@ export class Bullet {
         this.bulletPos = new Point(this.bulletShape.position.x, this.bulletShape.position.y)
     }
     
+    /*
     itemHitTest() {
         let options = {
             fill: true,
@@ -31,7 +34,7 @@ export class Bullet {
             return true
         }
         return false
-    }
+    } */
 
     outOfBounds(clientHeight, clientWidth) {
         return (this.bulletShape.position.x > clientWidth || this.bulletShape.position.y > clientHeight)
