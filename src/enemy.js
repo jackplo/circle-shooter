@@ -15,7 +15,8 @@ export class Enemy {
         this.velocity = 0
         this.bulletVelocity = 5
         this.bulletArray = []
-        this.lives = 20
+        this.lives = 3
+        this.interval = 0
     }
 
     accelerate(v) {
@@ -57,11 +58,16 @@ export class Enemy {
     }
 
     death() {
-        console.log('enemy: i am dead')
+        this.enemyBase.remove()
+        clearInterval(this.interval)
+        for (let i = this.bulletArray.length - 1; i >= 0; i--) {
+            this.bulletArray[i].bulletShape.remove()
+            this.bulletArray.splice(i, 1)
+        }
     }
 
     shoot() {
-        setInterval(() => {
+        this.interval = setInterval(() => {
             this.bulletArray.push(new Bullet(this.enemyBase.position.x, this.enemyBase.position.y, 3, this.calculateAngle(this.player), this.player, this.player.playerBase))
         }, 2000)
     }
@@ -90,27 +96,25 @@ export class Enemy {
     }
 
     update(clientWidth, clientHeight) {
-        let playerPos = new Point(this.player.playerBase.position)
-        let enemyPos = new Point(this.enemyBase.position)
-        if (this.pythagorean(playerPos, enemyPos) > 100) {
-            this.move()
-        } else {
-            this.stop()
-        }
+        if (this.lives >= 0) {
+            let playerPos = new Point(this.player.playerBase.position)
+            let enemyPos = new Point(this.enemyBase.position)
+            if (this.pythagorean(playerPos, enemyPos) > 100) {
+                this.move()
+            } else {
+                this.stop()
+            }
 
-        if (this.lives <= 0) {
-            this.death()
-        }
-
-        if (this.bulletArray != []) {
             for (let i = this.bulletArray.length - 1; i >= 0; i--) {
                 this.bulletArray[i].update()
-                this.bulletArray[i].itemHitTest()
-                if (this.outOfBounds(this.bulletArray[i].bulletShape, clientHeight, clientWidth)) {
+                if (this.bulletArray[i].itemHitTest() || this.outOfBounds(this.bulletArray[i].bulletShape, clientHeight, clientWidth)) {
                     this.bulletArray[i].bulletShape.remove()
                     this.bulletArray.splice(i, 1)
                 }
             }
+        } else {
+            this.death()
+            return
         }
     }
 }

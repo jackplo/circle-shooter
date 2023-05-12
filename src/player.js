@@ -12,7 +12,7 @@ export class Player {
             fillColor : this.color
         })
 
-        this.lives = 20
+        this.lives = 3
         this.velocity = 0
         this.bulletVelocity = 5
         this.mousePoint = new Point(this.playerBase.position.x, this.playerBase.position.y)
@@ -61,14 +61,11 @@ export class Player {
             this.death()
         }
 
-        if (this.bulletArray != []) {
-            for (let i = this.bulletArray.length - 1; i >= 0; i--) {
-                this.bulletArray[i].update()
-                this.bulletArray[i].itemHitTest()
-                if (this.outOfBounds(this.bulletArray[i].bulletShape, clientHeight, clientWidth)) {
-                    this.bulletArray[i].bulletShape.remove()
-                    this.bulletArray.splice(i, 1)
-                }
+        for (let i = this.bulletArray.length - 1; i >= 0; i--) {
+            this.bulletArray[i].update()
+            if (this.bulletArray[i].itemHitTest() || this.outOfBounds(this.bulletArray[i].bulletShape, clientHeight, clientWidth)) {
+                this.bulletArray[i].bulletShape.remove()
+                this.bulletArray.splice(i, 1)
             }
         }
     }
@@ -79,7 +76,12 @@ export class Player {
     }
 
     death() {
-        console.log('player: i am dead')
+        this.playerBase.remove()
+        for (let i = this.bulletArray.length - 1; i >= 0; i--) {
+            this.bulletArray[i].bulletShape.remove()
+            this.bulletArray.splice(i, 1)
+        }
+        this.velocity = 0
     }
 
     calculateAngle(point) {

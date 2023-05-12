@@ -28,7 +28,9 @@ export class Bullet {
         let hitResultPlayer = this.targetBase.hitTest(this.bulletPos, options) 
         if (hitResultPlayer != null) {
             this.target.lives -= 1
+            return true
         }
+        return false
     }
 
     outOfBounds(clientHeight, clientWidth) {
