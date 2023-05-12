@@ -1,6 +1,15 @@
 import { Player } from "./player.js"
-import { Enemy  } from "./enemy.js"
 import { spawnManager } from "./spawnManager.js"
+
+//Global Variables
+var canvas = document.getElementById("canvas");
+paper.install(window);
+paper.setup(canvas);
+
+var xMax = canvas.clientWidth;
+var yMax = canvas.clientHeight;
+var centerPoint = new Point(xMax/2, yMax/2)
+
 
 const outOfBounds = (item, clientHeight, clientWidth) => {
     return (item.position.x > clientWidth || item.position.x < 0 || item.position.y > clientHeight || item.position.y < 0)
@@ -37,7 +46,7 @@ const itemHitTest = (entityArray, bulletArray, clientHeight, clientWidth) => {
     }
 }
 
-const start = (xMax, yMax, centerPoint) => {
+const start = () => {
     let bulletArray = []
     var player = new Player(centerPoint.x, centerPoint.y, "blue", bulletArray)
     //var enemy = new Enemy(centerPoint.x + 100, centerPoint.y + 100, "red", player, bulletArray)
@@ -82,16 +91,13 @@ const start = (xMax, yMax, centerPoint) => {
     }
 }
 
-window.onload = function() {
-    var canvas = document.getElementById("canvas");
-    paper.install(window);
-    paper.setup(canvas);
-    
-    var xMax = canvas.clientWidth;
-    var yMax = canvas.clientHeight;
-    
-    var centerPoint = new Point(xMax/2, yMax/2)
-    
-    start(xMax, yMax, centerPoint)
 
+window.onload = function () {
+    const container = document.getElementById('container')
+    canvas.style.display = 'none'
+    document.getElementById('btn').onclick = function() {
+        container.style.display = 'none'
+        canvas.style.display = 'block'
+        start();
+    }
 }

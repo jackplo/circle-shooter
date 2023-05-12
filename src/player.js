@@ -42,10 +42,8 @@ export class Player {
             angle: this.calculateAngle(this.mousePoint),   
         })
         
-        
         this.base.position.x += this.dir.x
         this.base.position.y += this.dir.y
-    
     }
 
     update() {
