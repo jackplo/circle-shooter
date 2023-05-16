@@ -1,5 +1,5 @@
-import { Player } from "./player.js"
-import { spawnManager } from "./spawnManager.js"
+import { Player } from "../src/player.js"
+import { spawnManager } from "../src/spawnManager.js"
 
 //Global Variables
 var canvas = document.getElementById("canvas");
