@@ -46,6 +46,7 @@ export class Enemy extends Player {
         this.base.remove()
         this.lookPath.remove()
         clearInterval(this.interval)
+        this.text.remove()
     }
 
     shoot() {
@@ -65,8 +66,10 @@ export class Enemy extends Player {
     update() {
         let playerPos = new Point(this.player.base.position)
         let enemyPos = new Point(this.base.position)
+        this.healthText()
         this.lookPath.remove()
-        this.lookPath = new Path.Line(this.base.position, this.base.position.add(new Point({angle: this.calculateAngle(this.player), length: 35})))
+        this.lookPath = new Path.Line(this.base.position, this.base.position.add(new Point({ angle: this.calculateAngle(this.player), length: 35 })))
+        this.lookPath.sendToBack()
         this.lookPath.strokeColor = this.color
         this.lookPath.strokeWidth = 17.5
 
