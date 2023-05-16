@@ -11,5 +11,8 @@
   "license": "ISC",
   "dependencies": {
     "paper": "^0.12.17"
+  },
+  "devDependencies": {
+    "gh-pages": "^5.0.0"
   }
 }
